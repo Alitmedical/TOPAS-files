@@ -1,0 +1,145 @@
+# GNR with Water coating
+
+s:Ge/World/Type 	= "TsBox"
+s:Ge/World/Material 	= "Air"
+d:Ge/World/HLX 		= 5 um
+d:Ge/World/HLY 		= 5 um
+d:Ge/World/HLZ 		= 5 um
+b:Ge/World/Invisible 	= "T"
+
+s:Ge/MyBox/Type     = "TsBox"
+s:Ge/MyBox/Material = "G4_WATER"
+s:Ge/MyBox/Parent   = "World"
+d:Ge/MyBox/HLX      = 2.5 um
+d:Ge/MyBox/HLY      = 2.5 um
+d:Ge/MyBox/HLZ      = 2.5 um
+d:Ge/MyBox/TransZ   = -2.5 um
+
+s:Ge/ScoringShell/Type         = "TsSphere"
+s:Ge/ScoringShell/Material 	= "G4_WATER"
+s:Ge/ScoringShell/Parent       = "MyBox"
+d:Ge/ScoringShell/RMin         = 150 nm
+d:Ge/ScoringShell/RMax         = 500 nm
+s:Ge/ScoringShell/Color        = "yellow"
+s:Ge/ScoringShell/DrawingStyle = "WireFrame"
+#b:Ge/ScoringShell/IsParallel	= "True"
+
+
+# NP next to Source
+
+s:Ge/GNR/Type     = "TsCylinder"
+s:Ge/GNR/Parent   = "MyBox"
+s:Ge/GNR/Material = "G4_Au"
+d:Ge/GNR/RMin     = 0 nm
+d:Ge/GNR/RMax     = 30.0 nm
+d:Ge/GNR/HL       = 90.0 nm
+s:Ge/GNR/Color    = "yellow"
+s:Ge/GNR/DrawingStyle = "Solid"
+
+
+# Source definition
+
+s:So/PSsource/Type                            	= "PhaseSpace"
+s:So/PSsource/PhaseSpaceFileName              	= "ASCIIOutput100kVp-10um2"
+s:So/PSsource/Component                       	= "World"
+i:So/PSsource/PhaseSpaceMultipleUse           	= 0
+b:So/PSsource/PhaseSpaceIncludeEmptyHistories 	= "F"
+b:So/PSSource/PhaseSpacePreCheck 		= "F"
+
+u:So/PSsource/PhaseSpaceScaleXPosBy 		= 0.016
+u:So/PSsource/PhaseSpaceScaleYPosBy 		= 0.016
+u:So/PSsource/PhaseSpaceScaleZPosBy 		= 0.
+
+i:So/PSsource/NumberOfHistoriesInRun   = 100000000
+
+i:Ts/ShowHistoryCountAtInterval = 1000000
+
+## Physics settings ##
+
+sv:Ph/Default/Modules 		= 1 "g4em-dna_opt7"
+b:Ph/Default/G4DNA/Auger	= "True"
+b:Ph/Default/G4DNA/AugerCascade	= "True"
+b:Ph/Default/G4DNA/Fluorescence	= "True"
+b:Ph/Default/G4DNA/PIXE		= "True"
+b:Ph/Default/G4DNA/DeexcitationIgnoreCut = "True"
+d:Ph/Default/G4DNA/EMRangeMin	= 10. eV
+d:Ph/Default/G4DNA/EMRangeMax 	= 1. MeV
+
+
+## Scoring ##
+
+#  Electron Spectrum
+
+s:Sc/ESWaterCoat/Quantity                  	= "Fluence"
+s:Sc/ESWaterCoat/Component                 	= "MyBox"
+b:Sc/ESWaterCoat/OutputToConsole           	= "False"
+s:Sc/ESWaterCoat/OutputFile                	= "ESWaterNarrowBeam"
+s:Sc/ESWaterCoat/IfOutputFileAlreadyExists 	= "overwrite"
+i:Sc/ESWaterCoat/EBins                     	= 1000
+d:Sc/ESWaterCoat/EBinMin                   	= 0. eV
+d:Sc/ESWaterCoat/EBinMax                   	= 100 keV
+s:Sc/ESWaterCoat/EBinEnergy                	= "PreStep"
+sv:Sc/ESWaterCoat/OnlyIncludeParticlesNamed 	= 1 "11"
+sv:Sc/ESWaterCoat/Report		   	= 1 "Sum"
+
+s:Sc/ESScoringShell/Quantity                  	= "Fluence"
+s:Sc/ESScoringShell/Component                 	= "ScoringShell"
+b:Sc/ESScoringShell/OutputToConsole           	= "False"
+s:Sc/ESScoringShell/OutputFile                	= "ESScoringShellWaterNarrowBeam"
+s:Sc/ESScoringShell/IfOutputFileAlreadyExists 	= "overwrite"
+i:Sc/ESScoringShell/EBins                     	= 1000
+d:Sc/ESScoringShell/EBinMin                   	= 0. eV
+d:Sc/ESScoringShell/EBinMax                   	= 100 keV
+s:Sc/ESScoringShell/EBinEnergy                	= "PreStep"
+sv:Sc/ESScoringShell/OnlyIncludeParticlesNamed 	= 1 "11"
+sv:Sc/ESScoringShell/Report		   	= 1 "Sum"
+
+
+# Dose at DoseMyBox
+
+s:Sc/DoseMyBox/Quantity                  = "DoseToMedium"
+s:Sc/DoseMyBox/Component                 = "MyBox"
+b:Sc/DoseMyBox/OutputToConsole           = "TRUE"
+s:Sc/DoseMyBox/OutputFile                = "DoseWaterNarrowBeam"
+s:Sc/DoseMyBox/IfOutputFileAlreadyExists = "overwrite"
+sv:Sc/DoseMyBox/Report                   = 2 "Sum" "Standard_Deviation"
+
+s:Sc/DoseScoringShell/Quantity                  = "DoseToMedium"
+s:Sc/DoseScoringShell/Component                 = "ScoringShell"
+b:Sc/DoseScoringShell/OutputToConsole           = "TRUE"
+s:Sc/DoseScoringShell/OutputFile                = "DoseScoringShellWaterNarrowBeam"
+s:Sc/DoseScoringShell/IfOutputFileAlreadyExists = "overwrite"
+sv:Sc/DoseScoringShell/Report                   = 2 "Sum" "Standard_Deviation"
+
+
+# PhaseSpace at GNR surface
+
+s:Sc/PSWaterCoat/Quantity                    = "PhaseSpace"
+b:Sc/PSWaterCoat/OutputToConsole             = "True"
+s:Sc/PSWaterCoat/Surface                     = "GNR/AnySurface"
+s:Sc/PSWaterCoat/OutputType                  = "ASCII"
+s:Sc/PSWaterCoat/OutputFile                  = "ASCIIWaterNarrowBeam"
+s:Sc/PSWaterCoat/IfOutputFileAlreadyExists   = "overwrite"
+s:Sc/PSWaterCoat/OnlyIncludeParticlesGoing   = "Out"
+sv:Sc/PSWaterCoat/OnlyIncludeParticlesNamed  = 2 "e-" "gamma"
+b:Sc/PSWaterCoat/IncludeCreatorProcess 		= "True"
+s:Sc/PSWaterCoat/OnlyIncludeParticlesOfGeneration = "Secondary"
+
+
+## Graphics ##
+
+#s:Gr/ViewA/Type             = "OpenGL"
+i:Gr/ViewA/WindowSizeX      = 1024
+i:Gr/ViewA/WindowSizeY      = 768
+d:Gr/ViewA/Theta            = 55 deg
+d:Gr/ViewA/Phi              = 20 deg
+s:Gr/ViewA/Projection       = "Perspective"
+d:Gr/ViewA/PerspectiveAngle = 10 deg
+u:Gr/ViewA/Zoom             = 2.
+b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
+b:Gr/Enable = "T"
+
+
+b:Ts/ShowCPUTime                = "True"
+b:Ts/PauseBeforeQuit 	= "True"
+#Ts/UseQt 	= "True"

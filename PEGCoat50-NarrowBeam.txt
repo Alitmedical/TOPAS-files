@@ -1,0 +1,161 @@
+# GNR with PEG coating
+
+s:Ge/World/Type 	= "TsBox"
+s:Ge/World/Material 	= "Air"
+d:Ge/World/HLX 		= 5 um
+d:Ge/World/HLY 		= 5 um
+d:Ge/World/HLZ 		= 5 um
+b:Ge/World/Invisible 	= "T"
+
+
+s:Ge/MyBox/Type     = "TsBox"
+s:Ge/MyBox/Material = "G4_WATER"
+s:Ge/MyBox/Parent   = "World"
+d:Ge/MyBox/HLX      = 2.5 um
+d:Ge/MyBox/HLY      = 2.5 um
+d:Ge/MyBox/HLZ      = 2.5 um
+d:Ge/MyBox/TransZ   = -2.5 um
+
+
+s:Ge/ScoringShell/Type         = "TsSphere"
+s:Ge/ScoringShell/Material 	= "G4_WATER"
+s:Ge/ScoringShell/Parent       = "MyBox"
+d:Ge/ScoringShell/RMin         = 150 nm
+d:Ge/ScoringShell/RMax         = 500 nm
+s:Ge/ScoringShell/Color        = "yellow"
+s:Ge/ScoringShell/DrawingStyle = "WireFrame"
+#b:Ge/ScoringShell/IsParallel	= "True"
+
+s:Ge/GNR/Type     = "TsCylinder"
+s:Ge/GNR/Parent   = "Coating"
+s:Ge/GNR/Material = "G4_Au"
+d:Ge/GNR/RMin     = 0 nm
+d:Ge/GNR/RMax     = 30.0 nm
+d:Ge/GNR/HL       = 90.0 nm
+s:Ge/GNR/Color    = "yellow"
+s:Ge/GNR/DrawingStyle = "Solid"
+
+# Coating
+
+s:Ge/Coating/Type		= "G4Ellipsoid"
+s:Ge/Coating/Parent		= "MyBox"
+s:Ge/Coating/Material		= "PEG"
+d:Ge/Coating/HLX		= 80 nm
+d:Ge/Coating/HLY		= 80 nm
+d:Ge/Coating/HLZ		= 140 nm
+s:Ge/Coating/Color		= "red"
+s:Ge/Coating/DrawingStyle 	= "FullWireFrame"
+
+# Material: Polyethylene glycol (PEG)
+
+sv:Ma/PEG/Components	= 3 "Carbon" "Hydrogen" "Oxygen"
+uv:Ma/PEG/Fractions	= 3 0.3871 0.0968 0.5161
+d:Ma/PEG/Density	= 1.124 g/cm3
+
+
+# Source definition
+
+s:So/PSsource/Type                            	= "PhaseSpace"
+s:So/PSsource/PhaseSpaceFileName              	= "ASCIIOutput100kVp-10um2"
+s:So/PSsource/Component                       	= "World"
+i:So/PSsource/PhaseSpaceMultipleUse           	= 0
+b:So/PSsource/PhaseSpaceIncludeEmptyHistories 	= "F"
+b:So/PSSource/PhaseSpacePreCheck 		= "F"
+
+u:So/PSsource/PhaseSpaceScaleXPosBy 		= 0.016
+u:So/PSsource/PhaseSpaceScaleYPosBy 		= 0.016
+u:So/PSsource/PhaseSpaceScaleZPosBy 		= 0.
+
+i:So/PSsource/NumberOfHistoriesInRun   = 100000000
+
+i:Ts/ShowHistoryCountAtInterval = 1000000
+
+
+## Physics settings ##
+
+sv:Ph/Default/Modules 		= 1 "g4em-dna_opt7"
+b:Ph/Default/G4DNA/Auger	= "True"
+b:Ph/Default/G4DNA/AugerCascade	= "True"
+b:Ph/Default/G4DNA/Fluorescence	= "True"
+b:Ph/Default/G4DNA/PIXE		= "True"
+b:Ph/Default/G4DNA/DeexcitationIgnoreCut = "True"
+d:Ph/Default/G4DNA/EMRangeMin	= 10. eV
+d:Ph/Default/G4DNA/EMRangeMax 	= 1. MeV
+
+## Scoring ##
+
+#  Electron Spectrum
+
+s:Sc/ESWater/Quantity                  	= "Fluence"
+s:Sc/ESWater/Component                 	= "MyBox"
+b:Sc/ESWater/OutputToConsole           	= "False"
+s:Sc/ESWater/OutputFile                	= "ESPEGNarrowBeam50"
+s:Sc/ESWater/IfOutputFileAlreadyExists 	= "overwrite"
+i:Sc/ESWater/EBins                     	= 1000
+d:Sc/ESWater/EBinMin                   	= 0. eV
+d:Sc/ESWater/EBinMax                   	= 100 keV
+s:Sc/ESWater/EBinEnergy                	= "PreStep"
+sv:Sc/ESWater/OnlyIncludeParticlesNamed = 1 "11"
+sv:Sc/ESWater/Report		   	= 1 "Sum"
+
+
+s:Sc/ESScoringShell/Quantity                  	= "Fluence"
+s:Sc/ESScoringShell/Component                 	= "ScoringShell"
+b:Sc/ESScoringShell/OutputToConsole           	= "False"
+s:Sc/ESScoringShell/OutputFile                	= "ESScoringShellPEGNarrowBeam50"
+s:Sc/ESScoringShell/IfOutputFileAlreadyExists 	= "overwrite"
+i:Sc/ESScoringShell/EBins                     	= 1000
+d:Sc/ESScoringShell/EBinMin                   	= 0. eV
+d:Sc/ESScoringShell/EBinMax                   	= 100 keV
+s:Sc/ESScoringShell/EBinEnergy                	= "PreStep"
+sv:Sc/ESScoringShell/OnlyIncludeParticlesNamed 	= 1 "11"
+sv:Sc/ESScoringShell/Report		   	= 1 "Sum"
+
+# Dose
+
+s:Sc/DoseMyBox/Quantity                  = "DoseToMedium"
+s:Sc/DoseMyBox/Component                 = "MyBox"
+b:Sc/DoseMyBox/OutputToConsole           = "TRUE"
+s:Sc/DoseMyBox/OutputFile                = "DosePEGNarrowBeam50"
+s:Sc/DoseMyBox/IfOutputFileAlreadyExists = "overwrite"
+sv:Sc/DoseMyBox/Report                   = 2 "Sum" "Standard_Deviation"
+
+s:Sc/DoseScoringShell/Quantity                  = "DoseToMedium"
+s:Sc/DoseScoringShell/Component                 = "ScoringShell"
+b:Sc/DoseScoringShell/OutputToConsole           = "TRUE"
+s:Sc/DoseScoringShell/OutputFile                = "DoseScoringShellPEGNarrowBeam50"
+s:Sc/DoseScoringShell/IfOutputFileAlreadyExists = "overwrite"
+sv:Sc/DoseScoringShell/Report                   = 2 "Sum" "Standard_Deviation"
+
+
+# PhaseSpace at coating surface
+
+s:Sc/PSPSCoating/Quantity                    = "PhaseSpace"
+b:Sc/PSPSCoating/OutputToConsole             = "True"
+s:Sc/PSPSCoating/Surface                     = "Coating/AnySurface"
+s:Sc/PSPSCoating/OutputType                  = "ASCII"
+s:Sc/PSPSCoating/OutputFile                  = "ASCIIPEGNarrowBeam50"
+s:Sc/PSPSCoating/IfOutputFileAlreadyExists   = "overwrite"
+s:Sc/PSPSCoating/OnlyIncludeParticlesGoing   = "Out"
+sv:Sc/PSPSCoating/OnlyIncludeParticlesNamed  = 2 "e-" "gamma"
+b:Sc/PSPSCoating/IncludeCreatorProcess 		= "True"
+s:Sc/PSPSCoating/OnlyIncludeParticlesOfGeneration = "Secondary"
+
+
+## Graphics ##
+
+#s:Gr/ViewA/Type             = "OpenGL"
+i:Gr/ViewA/WindowSizeX      = 1024
+i:Gr/ViewA/WindowSizeY      = 768
+d:Gr/ViewA/Theta            = 55 deg
+d:Gr/ViewA/Phi              = 20 deg
+s:Gr/ViewA/Projection       = "Perspective"
+d:Gr/ViewA/PerspectiveAngle = 30 deg
+u:Gr/ViewA/Zoom             = 2.
+b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
+b:Gr/Enable = "T"
+
+
+b:Ts/ShowCPUTime                = "True"
+#b:Ts/PauseBeforeQuit 	= "True"
+#Ts/UseQt 	= "True"

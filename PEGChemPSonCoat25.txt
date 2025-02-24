@@ -1,0 +1,127 @@
+# Setup to help to reproduce time-dependent G-values - AuNR with PEG coating - 25nm
+
+##########################
+### Physics & Chemistry ##
+##########################
+
+sv:Ph/Default/Modules = 2 "TsEmDNAPhysics" "TsEmDNAChemistry" # "g4em-dna_opt7"  "g4em-dna-chemistry"
+s:Ph/Default/Electron/SetElasticScatteringModel = "ELSEPA" 
+s:Ph/Default/SolvatedElectronThermalizationModel =  "Ritchie"
+
+
+includeFile = TOPASDefaultReactions.txt
+
+s:Ch/ChemistryName = "TOPASChemistry"
+b:Ch/TOPASChemistry/ChemicalStageTransportActive = "True"
+d:Ch/TOPASChemistry/ChemicalStageTimeEnd = 1.00001 ps
+dv:Ch/TOPASChemistry/ChemicalStageTimeStepsHighEdges = 1 999999 ps
+dv:Ch/TOPASChemistry/ChemicalStageTimeStepsResolutions = 1 0.5 ps
+
+
+##########################
+######## Geometry ########
+##########################
+
+s:Ge/World/Type 	= "TsBox"
+s:Ge/World/Material 	= "Air"
+d:Ge/World/HLX 		= 5 um
+d:Ge/World/HLY 		= 5 um
+d:Ge/World/HLZ 		= 5 um
+b:Ge/World/Invisible 	= "T"
+
+s:Ge/MyBox/Type     	= "TsBox"
+s:Ge/MyBox/Material 	= "G4_WATER"
+s:Ge/MyBox/Parent   	= "World"
+d:Ge/MyBox/HLX      	= 2.5 um
+dc:Ge/MyBox/HLY      	= 2.5 um
+d:Ge/MyBox/HLZ      	= 2.5 um
+d:Ge/MyBox/TransZ   	= -1 * Ge/MyBox/HLZ um
+
+# NP as the Source
+
+s:Ge/AuNR/Type     = "TsCylinder"
+s:Ge/AuNR/Parent   = "Coating"
+s:Ge/AuNR/Material = "G4_Au"
+d:Ge/AuNR/RMin     = 0 nm
+d:Ge/AuNR/RMax     = 30. nm
+d:Ge/AuNR/HL       = 90. nm
+d:Ge/AuNR/RotX     = 0. deg
+d:Ge/AuNR/RotY     = 0. deg
+d:Ge/AuNR/RotZ     = 0. deg
+s:Ge/AuNR/Color    = "yellow"
+s:Ge/AuNR/DrawingStyle = "Solid"
+
+# Coating
+
+s:Ge/Coating/Type		= "G4Ellipsoid"
+s:Ge/Coating/Parent		= "MyBox"
+s:Ge/Coating/Material		= "PEG"
+d:Ge/Coating/HLX		= 55 nm # 80 nm #
+d:Ge/Coating/HLY		= 55 nm # 80 nm #
+d:Ge/Coating/HLZ		= 115 nm # 140 nm #
+s:Ge/Coating/Color		= "red"
+s:Ge/Coating/DrawingStyle 	= "FullWireFrame"
+
+
+# Material: Polyethylene glycol (PEG)
+
+sv:Ma/PEG/Components	=3 "Carbon" "Hydrogen" "Oxygen"
+uv:Ma/PEG/Fractions	=3 0.3871 0.0968 0.5161
+d:Ma/PEG/Density	=1.124 g/cm3
+
+##########################
+######### Source #########
+##########################
+
+s:So/PSsource/Type                            	= "PhaseSpace"
+s:So/PSsource/PhaseSpaceFileName              	= "ASCIIPEGNarrowBeam25"
+s:So/PSsource/Component                       	= "World"
+i:So/PSsource/PhaseSpaceMultipleUse           	= 0
+b:So/PSsource/PhaseSpaceIncludeEmptyHistories 	= "F"
+b:So/PSsource/PhaseSpacePreCheck		= "F"
+
+i:So/PSsource/NumberOfHistoriesInRun   = 22604
+
+
+##########################
+######### Scorer #########
+##########################
+
+#u:perCent = 0.01
+
+s:Sc/IRTGvalue/Quantity 		= "TsIRTGvalue"
+s:Sc/IRTGvalue/Component 		= "MyBox"
+s:Sc/IRTGvalue/OutputFile 		= "GvaluePEG25nm"
+s:Sc/IRTGvalue/IfOutputFileAlreadyExists= "Overwrite"
+s:Sc/IRTGvalue/OutputType               = "ASCII"
+d:Sc/IRTGvalue/KillPrimaryIfEnergyLossExceeds       = 100 keV
+d:Sc/IRTGvalue/AbortEventIfPrimaryEnergyLossExceeds = 101 keV
+d:Sc/IRTGvalue/KillPrimaryBasedOnTrackLength        = 5 um
+d:Sc/IRTGvalue/CutOffTime 		= 1 ps
+d:Sc/IRTGvalue/TimeLower 		= 1.0 ps
+d:Sc/IRTGvalue/TimeUpper 		= 1e6 ps 
+i:Sc/IRTGvalue/TimeBins  		= 20
+
+
+##########################
+######## Graphics ########
+##########################
+
+
+#s:Gr/ViewA/Type                            = "OpenGL"
+i:Gr/ViewA/WindowSizeX                      = 900
+i:Gr/ViewA/WindowSizeY                      = 900
+d:Gr/ViewA/Theta                            = 55 deg
+d:Gr/ViewA/Phi                              = 20 deg
+s:Gr/ViewA/Projection                       = "Perspective"
+d:Gr/ViewA/PerspectiveAngle                 = 30 deg
+u:Gr/ViewA/Zoom                             = 3
+b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
+b:Gr/Enable = "F"
+
+
+i:Ts/ShowHistoryCountAtInterval = 1000
+b:Ts/ShowCPUTime = "True"
+i:Ts/NumberOfThreads = 0
+#b:Ts/PauseBeforeQuit = "True"
+#Ts/UseQt = "True"
